@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>SecureBank | Fraud Detection Demo</title>
+    <link rel="stylesheet" th:href="@{/style.css}"/>
+</head>
+<body>
+<div class="wrap">
+    <h1>🏦 SecureBank — Fraud Detection Demo</h1>
+    <p class="creds">
+        Demo customer login → <strong>rahul@gmail.com</strong> / <strong>password123</strong><br/>
+        Demo admin login → <strong>admin</strong> / <strong>admin123</strong>
+    </p>
+
+    <div class="card">
+        <h3>Customer Login</h3>
+        <form th:action="@{/login}" method="post">
+            <label>Email</label>
+            <input type="text" name="email" required="required"/>
+            <label>Password</label>
+            <input type="password" name="password" required="required"/>
+            <button type="submit">Login</button>
+        </form>
+        <p class="status err" th:if="${loginStatus != null and !loginStatus.isEmpty()}" th:text="${loginStatus}"></p>
+    </div>
+
+    <div class="card">
+        <h3>Register</h3>
+        <form th:action="@{/register}" method="post">
+            <label>Name</label>
+            <input type="text" name="name" required="required"/>
+            <label>Email</label>
+            <input type="text" name="email" required="required"/>
+            <label>Password</label>
+            <input type="password" name="password" required="required"/>
+            <button type="submit" class="secondary">Register</button>
+        </form>
+        <p class="status" th:if="${regStatus != null and !regStatus.isEmpty()}" th:text="${regStatus}"></p>
+    </div>
+
+    <div class="card">
+        <h3>Admin Login</h3>
+        <form th:action="@{/admin-login}" method="post">
+            <label>Admin Username</label>
+            <input type="text" name="username" required="required"/>
+            <label>Admin Password</label>
+            <input type="password" name="password" required="required"/>
+            <button type="submit" class="secondary">Login as Admin</button>
+        </form>
+        <p class="status err" th:if="${adminStatus != null and !adminStatus.isEmpty()}" th:text="${adminStatus}"></p>
+    </div>
+</div>
+</body>
+</html>

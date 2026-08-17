@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>SecureBank | Admin</title>
+    <link rel="stylesheet" th:href="@{/style.css}"/>
+</head>
+<body>
+<div class="wrap">
+    <div class="topbar">
+        <h1>Admin Dashboard</h1>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="secondary">Logout</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Blocked Transactions (Pending Review)</h3>
+        <table>
+            <tr><th>ID</th><th>Customer</th><th>Amount (₹)</th><th>Risk Score</th><th>Reasons</th></tr>
+            <tr th:each="t : ${pending}">
+                <td th:text="${t.id}"></td>
+                <td th:text="${t.userName}"></td>
+                <td th:text="${#numbers.formatInteger(t.amount, 0, 'COMMA')}"></td>
+                <td th:text="${t.riskScore}"></td>
+                <td th:text="${t.reasonsJoined}"></td>
+            </tr>
+        </table>
+        <p th:if="${pending == null or pending.isEmpty()}">No pending transactions.</p>
+
+        <form th:action="@{/admin/decide}" method="post">
+            <label>Transaction ID</label>
+            <input type="number" name="txnId" required="required"/>
+            <button type="submit" name="decision" value="approve">✅ Approve</button>
+            <button type="submit" name="decision" value="reject" class="danger">❌ Reject</button>
+        </form>
+        <p class="status" th:if="${adminActionStatus != null and !adminActionStatus.isEmpty()}"
+           th:text="${adminActionStatus}"></p>
+    </div>
+
+    <div class="card">
+        <h3>Resolved Alerts</h3>
+        <table>
+            <tr><th>ID</th><th>Customer</th><th>Amount (₹)</th><th>Status</th></tr>
+            <tr th:each="t : ${resolved}">
+                <td th:text="${t.id}"></td>
+                <td th:text="${t.userName}"></td>
+                <td th:text="${#numbers.formatInteger(t.amount, 0, 'COMMA')}"></td>
+                <td th:text="${t.status.label}"></td>
+            </tr>
+        </table>
+        <p th:if="${resolved == null or resolved.isEmpty()}">No resolved alerts yet.</p>
+    </div>
+</div>
+</body>
+</html>

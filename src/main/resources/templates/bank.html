@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>SecureBank | Dashboard</title>
+    <link rel="stylesheet" th:href="@{/style.css}"/>
+</head>
+<body>
+<div class="wrap">
+    <div class="topbar">
+        <div>
+            <h1 th:text="'Welcome, ' + ${welcomeName} + ' 👋'"></h1>
+            <p class="balance" th:text="'Balance: ₹' + ${balance}"></p>
+        </div>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="secondary">Logout</button>
+        </form>
+    </div>
+
+    <div class="tabs">
+        <a th:href="@{/bank(tab='transfer')}" th:classappend="${tab == 'transfer'} ? 'active'">Transfer Money</a>
+        <a th:href="@{/bank(tab='history')}" th:classappend="${tab == 'history'} ? 'active'">Transaction History</a>
+        <a th:href="@{/bank(tab='alerts')}" th:classappend="${tab == 'alerts'} ? 'active'">Fraud Alerts</a>
+    </div>
+
+    <div class="card" th:if="${tab == 'transfer'}">
+        <h3>Transfer Money</h3>
+        <form th:action="@{/bank/transfer}" method="post">
+            <label>Receiver Account</label>
+            <input type="text" name="receiver" value="1234567890" required="required"/>
+            <label>Amount (₹)</label>
+            <input type="number" name="amount" value="10000" min="1" required="required"/>
+            <p class="creds"><em>Simulated context — in production this comes from the device/session automatically:</em></p>
+            <label>Device used</label>
+            <select name="device">
+                <option th:each="d : ${deviceOptions}" th:value="${d}" th:text="${d}"></option>
+            </select>
+            <label>Location</label>
+            <select name="location">
+                <option th:each="l : ${locationOptions}" th:value="${l}" th:text="${l}"></option>
+            </select>
+            <button type="submit">Transfer</button>
+        </form>
+        <p class="status" th:if="${transferResult != null and !transferResult.isEmpty()}"
+           th:classappend="${transferOk} ? 'ok' : 'err'" th:text="${transferResult}"></p>
+    </div>
+
+    <div class="card" th:if="${tab == 'history'}">
+        <h3>Transaction History</h3>
+        <table>
+            <tr><th>ID</th><th>Receiver</th><th>Amount (₹)</th><th>Risk Score</th><th>Status</th><th>Time</th></tr>
+            <tr th:each="t : ${history}">
+                <td th:text="${t.id}"></td>
+                <td th:text="${t.receiver}"></td>
+                <td th:text="${#numbers.formatInteger(t.amount, 0, 'COMMA')}"></td>
+                <td th:text="${t.riskScore}"></td>
+                <td th:text="${t.status.label}"></td>
+                <td th:text="${t.formattedTime}"></td>
+            </tr>
+        </table>
+        <p th:if="${history == null or history.isEmpty()}">No transactions yet.</p>
+    </div>
+
+    <div class="card" th:if="${tab == 'alerts'}">
+        <h3>Fraud Alerts</h3>
+        <div class="alert-block" th:each="t : ${alerts}">
+            <strong th:text="'₹' + ${#numbers.formatInteger(t.amount, 0, 'COMMA')} + ' to ' + ${t.receiver}"></strong>
+            <span th:text="' — status: ' + ${t.status.label}"></span>
+            <p th:text="'Reason: ' + ${t.reasonsJoined}"></p>
+        </div>
+        <p th:if="${alerts == null or alerts.isEmpty()}">No fraud alerts on your account.</p>
+    </div>
+</div>
+</body>
+</html>
